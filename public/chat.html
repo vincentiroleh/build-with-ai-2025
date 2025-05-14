@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Moztra Chat</title>
+  <style>
+    body { font-family: sans-serif; background: #f5f5f5; padding: 2rem; }
+    #chatbox { max-width: 600px; margin: auto; background: white; padding: 1rem; border-radius: 10px; }
+    .message { margin-bottom: 1rem; }
+    .user { color: blue; }
+    .bot { color: green; }
+  </style>
+</head>
+<body>
+  <div id="chatbox">
+    <h2>💬 Ask Moztra Support</h2>
+    <div id="messages"></div>
+    <input type="text" id="question" placeholder="Ask your question..." style="width: 80%;" />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const question = document.getElementById("question").value;
+      const messages = document.getElementById("messages");
+
+      if (!question.trim()) return;
+
+      messages.innerHTML += `<div class="message user"><strong>You:</strong> ${question}</div>`;
+      document.getElementById("question").value = "";
+
+      const res = await fetch("/support", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question })
+      });
+
+      const data = await res.json();
+      messages.innerHTML += `<div class="message bot"><strong>Moztra:</strong> ${data.reply}</div>`;
+      messages.scrollTop = messages.scrollHeight;
+    }
+  </script>
+</body>
+</html>
